@@ -16,7 +16,7 @@ var Ip = flag.String("ip", "http://localhost:2020", "Public IP address of server
 
 func Send(name, email, validity, token string) {
 	if *SENDGRID_API_KEY == "" {
-		fmt.Println(*Ip + "/#/quiz/" + token)
+		fmt.Println(name + " " + email + " " + *Ip + "/#/quiz/" + token)
 		return
 	}
 	from := mail.NewEmail("Dgraph", "join@dgraph.io")
