@@ -45,7 +45,7 @@ var (
 	// TODO - Later just have one IP address with port info.
 	port     = flag.String("port", ":8000", "Port on which server listens")
 	username = flag.String("user", "", "Username to login to admin panel")
-	password = flag.String("pass", "", "Username to login to admin panel")
+	password = flag.String("pass", "", "Password to login to admin panel")
 )
 
 type AdminClaims struct {
@@ -154,6 +154,7 @@ func runHTTPServer(address string) {
 	quizRouter.HandleFunc("/answer", quiz.AnswerHandler).Methods("POST", "OPTIONS")
 	quizRouter.HandleFunc("/ping", quiz.PingHandler).Methods("POST", "OPTIONS")
 	quizRouter.HandleFunc("/feedback", quiz.Feedback).Methods("POST", "OPTIONS")
+	quizRouter.HandleFunc("/name", quiz.CandidateName).Methods("POST", "OPTIONS")
 
 	admin := mux.NewRouter()
 	router.PathPrefix("/api/admin").Handler(negroni.New(
@@ -163,7 +164,9 @@ func runHTTPServer(address string) {
 	))
 
 	adminRouter := admin.PathPrefix("/api/admin").Subrouter()
-	// TODO - Change the API's to RESTful API's
+	adminRouter.HandleFunc("/proxy", dgraph.Proxy).Methods("POST", "OPTIONS")
+
+	// TODO - Change to payload endpoint.
 	adminRouter.HandleFunc("/add-question", question.Add).Methods("POST", "OPTIONS")
 	// TODO - Change to PUT.
 	adminRouter.HandleFunc("/get-all-questions", question.Index).Methods("POST", "OPTIONS")

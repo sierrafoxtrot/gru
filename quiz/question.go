@@ -73,11 +73,23 @@ func QuestionHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.Write(b)
-		go sendReport(userId)
+		if !c.mailSent {
+			go sendReport(userId)
+			c.mailSent = true
+			updateMap(userId, c)
+		}
 		return
 	}
 
 	qn := c.qns[0]
+	if c.lastQnTime.IsZero() {
+		qn.TimeTaken = "0s"
+		c.lastQnTime = time.Now().UTC()
+		updateMap(userId, c)
+	} else {
+		qn.TimeTaken = time.Now().UTC().Sub(c.lastQnTime).String()
+	}
+
 	// Truncate score to two decimal places.
 	qn.Score = x.Truncate(c.score)
 	shuffleOptions(qn.Options)

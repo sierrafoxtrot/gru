@@ -10,6 +10,7 @@ import (
 )
 
 var SENDGRID_API_KEY = flag.String("sendgrid", "", "Sendgrid API Key")
+var reportMail = flag.String("report", "join@dgraph.io", "Email on which to send the reports.")
 
 // TODO - Later just have one IP address with port info.
 var Ip = flag.String("ip", "http://localhost:2020", "Public IP address of server")
@@ -55,15 +56,15 @@ You can take the quiz anytime till ` + validity + ` by visiting <a href="` + url
 	x.Debug(response.Headers)
 }
 
-func SendReport(name string, score, maxScore float64, body string) {
+func SendReport(name string, quiz string, score, maxScore float64, body string) {
 	if *SENDGRID_API_KEY == "" {
 		return
 	}
 
 	from := mail.NewEmail("Gru", "join@dgraph.io")
-	subject := fmt.Sprintf("Gru: Candidate %v scored %.2f/%.2f in the demo test", name,
-		score, maxScore)
-	to := mail.NewEmail("Dgraph", "join@dgraph.io")
+	subject := fmt.Sprintf("%v scored %.2f/%.2f in the %v quiz", name,
+		score, maxScore, quiz)
+	to := mail.NewEmail("Dgraph", *reportMail)
 
 	content := mail.NewContent("text/html", body)
 	m := mail.NewV3MailInit(from, subject, to, content)

@@ -7,6 +7,7 @@ import (
 	"github.com/dgraph-io/gru/dgraph"
 )
 
+// TODO - Later remove this when we have a proxy endpoint for quiz candidates too.
 func Feedback(w http.ResponseWriter, r *http.Request) {
 	sr := server.Response{}
 	userId, err := validateToken(r)
@@ -18,6 +19,7 @@ func Feedback(w http.ResponseWriter, r *http.Request) {
 	f := r.PostFormValue("feedback")
 	if f == "" {
 		sr.Write(w, "", "Feedback can't be empty.", http.StatusBadRequest)
+		return
 	}
 
 	m := new(dgraph.Mutation)
